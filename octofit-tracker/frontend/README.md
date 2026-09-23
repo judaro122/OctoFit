@@ -9,7 +9,7 @@ VITE_CODESPACE_NAME=your-codespace-name
 ```
 
 The app then calls `https://${VITE_CODESPACE_NAME}-8000.app.github.dev/api/[component]/`.
-When the variable is not defined, it safely falls back to `http://localhost:8000`.
+When the variable is not defined, the app detects the Codespaces name from a `-5173.app.github.dev` hostname. For local development, it falls back to `http://localhost:8000`.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

@@ -59,6 +59,13 @@ const createResourceItem = (resource: ResourceName, payload: ResourceRecord): Re
 
 app.use(express.json());
 
+app.use((_request, response, next) => {
+  response.header('Access-Control-Allow-Origin', '*');
+  response.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  response.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.get('/api/health', (_request, response) => {
   response.json({ status: 'ok' });
 });
