@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { fetchResource } from '../api.js'
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const apiBaseUrl = codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000'
+const endpoint = `${apiBaseUrl}/api/activities/`
+
+const getItems = (payload) => Array.isArray(payload) ? payload : payload?.results ?? payload?.data ?? payload?.items ?? []
 
 function Activities() {
   const [activities, setActivities] = useState([])
@@ -7,7 +11,10 @@ function Activities() {
 
   useEffect(() => {
     const controller = new AbortController()
-    fetchResource('activities', controller.signal).then(setActivities).catch((requestError) => {
+    fetch(endpoint, { signal: controller.signal }).then((response) => {
+      if (!response.ok) throw new Error('Unable to load activities')
+      return response.json()
+    }).then((payload) => setActivities(getItems(payload))).catch((requestError) => {
       if (requestError.name !== 'AbortError') setError(requestError.message)
     })
     return () => controller.abort()

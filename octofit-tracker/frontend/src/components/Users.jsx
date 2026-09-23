@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
-import { fetchResource } from '../api.js'
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const apiBaseUrl = codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000'
+const endpoint = `${apiBaseUrl}/api/users/`
+
+const getItems = (payload) => Array.isArray(payload) ? payload : payload?.results ?? payload?.data ?? payload?.items ?? []
 
 function Users() {
   const [users, setUsers] = useState([])
   const [error, setError] = useState('')
   useEffect(() => {
     const controller = new AbortController()
-    fetchResource('users', controller.signal).then(setUsers).catch((requestError) => {
+    fetch(endpoint, { signal: controller.signal }).then((response) => {
+      if (!response.ok) throw new Error('Unable to load users')
+      return response.json()
+    }).then((payload) => setUsers(getItems(payload))).catch((requestError) => {
       if (requestError.name !== 'AbortError') setError(requestError.message)
     })
     return () => controller.abort()

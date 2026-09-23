@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
-import { fetchResource } from '../api.js'
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const apiBaseUrl = codespaceName ? `https://${codespaceName}-8000.app.github.dev` : 'http://localhost:8000'
+const endpoint = `${apiBaseUrl}/api/teams/`
+
+const getItems = (payload) => Array.isArray(payload) ? payload : payload?.results ?? payload?.data ?? payload?.items ?? []
 
 function Teams() {
   const [teams, setTeams] = useState([])
   const [error, setError] = useState('')
   useEffect(() => {
     const controller = new AbortController()
-    fetchResource('teams', controller.signal).then(setTeams).catch((requestError) => {
+    fetch(endpoint, { signal: controller.signal }).then((response) => {
+      if (!response.ok) throw new Error('Unable to load teams')
+      return response.json()
+    }).then((payload) => setTeams(getItems(payload))).catch((requestError) => {
       if (requestError.name !== 'AbortError') setError(requestError.message)
     })
     return () => controller.abort()
