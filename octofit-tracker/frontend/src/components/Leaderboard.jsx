@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
 const detectedCodespaceName = window.location.hostname.match(/^(.+)-5173\.app\.github\.dev$/)?.[1]
-const apiBaseUrl = codespaceName || detectedCodespaceName
-  ? `https://${codespaceName || detectedCodespaceName}-8000.app.github.dev`
-  : 'http://localhost:8000'
-const endpoint = `${apiBaseUrl}/api/leaderboard/`
+const endpoint = codespaceName || detectedCodespaceName
+  ? `https://${codespaceName || detectedCodespaceName}-8000.app.github.dev/api/leaderboard/`
+  : 'http://localhost:8000/api/leaderboard/'
 
 const getItems = (payload) => Array.isArray(payload) ? payload : payload?.results ?? payload?.data ?? payload?.items ?? []
 
