@@ -1,7 +1,6 @@
 import express from 'express';
 import { pathToFileURL } from 'node:url';
 
-import { getApiBaseUrl } from './config/api.js';
 import { connectToDatabase } from './config/database.js';
 import {
   Activity,
@@ -10,6 +9,16 @@ import {
   User,
   Workout,
 } from './models/resourceModels.js';
+
+const getApiBaseUrl = (): string => {
+  const codespaceName = process.env.CODESPACE_NAME?.trim();
+
+  if (codespaceName) {
+    return `https://${codespaceName}-8000.app.github.dev`;
+  }
+
+  return 'http://localhost:8000';
+};
 
 const app = express();
 const port = Number(process.env.PORT) || 8000;
